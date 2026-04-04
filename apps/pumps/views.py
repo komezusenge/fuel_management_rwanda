@@ -75,8 +75,11 @@ def close_shift(request, pk):
 
     try:
         shift.close_shift(serializer.validated_data['end_index'])
-    except ValueError as e:
-        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except ValueError:
+        return Response(
+            {'detail': 'Invalid end index: must be greater than or equal to the start index, and shift must not already be closed.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     if serializer.validated_data.get('notes'):
         shift.notes = serializer.validated_data['notes']
