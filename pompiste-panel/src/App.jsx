@@ -10,7 +10,7 @@ import SalesPage from './pages/SalesPage';
 import ReportsPage from './pages/ReportsPage';
 import ProfilePage from './pages/ProfilePage';
 
-function ProtectedLayout({ children, addToast, isDark, onToggleDark }) {
+function ProtectedLayout({ children, isDark, onToggleDark }) {
   const isAuthenticated = useSelector((s) => s.auth.isAuthenticated);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return (
@@ -57,7 +57,7 @@ export default function App() {
           <Route
             path="/"
             element={
-              <ProtectedLayout addToast={addToast} isDark={isDark} onToggleDark={toggleDark}>
+              <ProtectedLayout isDark={isDark} onToggleDark={toggleDark}>
                 <DashboardPage addToast={addToast} />
               </ProtectedLayout>
             }
@@ -65,7 +65,7 @@ export default function App() {
           <Route
             path="/sales"
             element={
-              <ProtectedLayout addToast={addToast} isDark={isDark} onToggleDark={toggleDark}>
+              <ProtectedLayout isDark={isDark} onToggleDark={toggleDark}>
                 <SalesPage addToast={addToast} />
               </ProtectedLayout>
             }
@@ -73,7 +73,7 @@ export default function App() {
           <Route
             path="/reports"
             element={
-              <ProtectedLayout addToast={addToast} isDark={isDark} onToggleDark={toggleDark}>
+              <ProtectedLayout isDark={isDark} onToggleDark={toggleDark}>
                 <ReportsPage addToast={addToast} />
               </ProtectedLayout>
             }
@@ -81,7 +81,7 @@ export default function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedLayout addToast={addToast} isDark={isDark} onToggleDark={toggleDark}>
+              <ProtectedLayout isDark={isDark} onToggleDark={toggleDark}>
                 <ProfilePage addToast={addToast} />
               </ProtectedLayout>
             }

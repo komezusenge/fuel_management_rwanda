@@ -22,7 +22,7 @@ export default function DailySalesReport({ addToast }) {
     try {
       const res = await api.get('/reports/daily/', { params: { date } });
       setReport(res.data);
-    } catch (err) {
+    } catch {
       addToast?.('Failed to load report', 'error');
       setReport(null);
     } finally {
