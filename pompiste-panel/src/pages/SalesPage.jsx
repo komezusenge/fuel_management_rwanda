@@ -20,11 +20,10 @@ export default function SalesPage({ addToast }) {
       .catch(() => {});
   }, [currentShift?.id]);
 
-  // Attempt to sync offline queue when online
+  // Sync offline queue when connection is restored
   useEffect(() => {
-    if (!navigator.onLine || offlineQueue.length === 0) return;
-
     const sync = async () => {
+      if (offlineQueue.length === 0) return;
       let syncedCount = 0;
       for (let i = offlineQueue.length - 1; i >= 0; i--) {
         const { _offline, _id, ...payload } = offlineQueue[i];
@@ -45,8 +44,9 @@ export default function SalesPage({ addToast }) {
       }
     };
 
-    sync();
-  }, [navigator.onLine]);
+    window.addEventListener('online', sync);
+    return () => window.removeEventListener('online', sync);
+  }, [offlineQueue, currentShift?.id]);
 
   return (
     <div>
