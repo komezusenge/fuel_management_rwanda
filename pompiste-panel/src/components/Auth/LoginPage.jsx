@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginStart, loginSuccess, loginFailure } from '../../store/authSlice';
-import { login } from '../../services/authService';
+import { loginStart, loginSuccess, loginFailure, logout, tokenRefreshed } from '../../store/authSlice';
+import { login, getCurrentUser } from '../../services/authService';
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -14,10 +14,26 @@ export default function LoginPage() {
 
   const onSubmit = async (data) => {
     dispatch(loginStart());
+    let tokenDispatched = false;
     try {
       const res = await login(data);
-      dispatch(loginSuccess(res.data));
+      // Temporarily store the access token so the API interceptor can attach it
+      // to the subsequent getCurrentUser request.
+      dispatch(tokenRefreshed(res.data.access));
+      tokenDispatched = true;
+      const userRes = await getCurrentUser();
+      dispatch(loginSuccess({
+        user: userRes.data,
+        access: res.data.access,
+        refresh: res.data.refresh,
+      }));
     } catch (err) {
+      // If the token was already persisted to the store/localStorage but the
+      // user-profile fetch failed, clean up to avoid an inconsistent auth state
+      // (accessToken present but no user data on the next page load).
+      if (tokenDispatched) {
+        dispatch(logout());
+      }
       const msg =
         err.response?.data?.detail ||
         err.response?.data?.non_field_errors?.[0] ||
